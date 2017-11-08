@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<assemblies timestamp="11/04/2017 21:48:36">
+  <assembly name="DotNetCoreXUnit1.dll" environment="64-bit .NET Standard [collection-per-class, parallel (4 threads)]" test-framework="xUnit.net 2.3.1.3858" run-date="2017-11-04" run-time="21:48:36" total="2" passed="1" failed="1" skipped="0" time="0.312" errors="0">
+    <errors />
+    <collection total="2" passed="1" failed="1" skipped="0" name="Test collection for DotNetCoreXUnit1.Class1" time="0.028">
+      <test name="DotNetCoreXUnit1.Class1.FailingTest" type="DotNetCoreXUnit1.Class1" method="FailingTest" time="0.0244897" result="Fail">
+        <failure exception-type="Xunit.Sdk.EqualException">
+          <message><![CDATA[Assert.Equal() Failure\nExpected: 5\nActual:   4]]></message>
+          <stack-trace><![CDATA[   at DotNetCoreXUnit1.Class1.FailingTest() in /home/serg/Programming/C#/DotNetCoreXUnit1/Class1.cs:line 16]]></stack-trace>
+        </failure>
+      </test>
+      <test name="DotNetCoreXUnit1.Class1.PassingTest" type="DotNetCoreXUnit1.Class1" method="PassingTest" time="0.0037784" result="Pass" />
+    </collection>
+  </assembly>
+</assemblies>
