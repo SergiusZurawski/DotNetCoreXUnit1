@@ -26,6 +26,8 @@ namespace DotNetCoreXUnit1
                 var wait = new WebDriverWait(driver, TimeSpan.FromMinutes(1));
                 var clickableElement = wait.Until(ExpectedConditions.ElementToBeClickable(By.PartialLinkText("TFS Test API")));
                 clickableElement.Click();
+                var ss = driver.GetScreenshot();
+                ss.SaveAsFile("ss1.png");
             }
         }
 
@@ -56,6 +58,9 @@ namespace DotNetCoreXUnit1
                 var wait = new WebDriverWait(driver, TimeSpan.FromMinutes(1));
                 var clickableElement = wait.Until(ExpectedConditions.ElementToBeClickable(By.PartialLinkText("TFS Test API")));
                 clickableElement.Click();
+
+                var ss = driver.GetScreenshot();
+                ss.SaveAsFile("ss.png");
             }
         }
     }
