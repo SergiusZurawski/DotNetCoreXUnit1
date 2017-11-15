@@ -20,18 +20,20 @@ namespace DotNetCoreXUnit1
     {
         ITestFailed eventTestFailed;
         private readonly ITestOutputHelper output;
-        private string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private readonly string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         public AutomateThePlanetTestsXUnit(ITestOutputHelper output)
         {
             this.output = output;
-            this.eventTestFailed = eventTestFailed;
         }
 
         [Fact]
         public void TestWithFirefoxDriver()
         {
-        
+            output.WriteLine("Location is here ::::::::: " + location);
+            //using (var driver = new FirefoxDriver(location))
+            //FirefoxOptions options = new FirefoxOptions();
+            //options.AddAdditionalCapability("moz:firefoxOptions.binary", "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"); //This is the location where you have installed Firefox on your machine
             using (var driver = new FirefoxDriver(location))
             {
                 global_driver = driver;
@@ -50,14 +52,14 @@ namespace DotNetCoreXUnit1
                 clickableElement.Click();
                 var ss = driver.GetScreenshot();
                 ss.SaveAsFile("ss1.png");
-                output.WriteLine("screenshot {0}", location+"/"+ "ss1.png");
+                output.WriteLine("screenshot {0}", location + "/" + "ss1.png");
             }
         }
 
         [Fact]
         public void TestWithEdgeDriver()
         {
-            using (var driver = new EdgeDriver(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)))
+            using (var driver = new EdgeDriver(location))
             {
                 driver.Navigate().GoToUrl(@"https://automatetheplanet.com/multiple-files-page-objects-item-templates/");
                 var link = driver.FindElement(By.PartialLinkText("TFS Test API"));

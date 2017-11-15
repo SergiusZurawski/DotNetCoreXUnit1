@@ -4,25 +4,56 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <FirefoxType>x32</FirefoxType>
+  </PropertyGroup>
+
    <ItemGroup>
-    <PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
     <PackageReference Include="Selenium.Support" Version="3.7.0" />
     <PackageReference Include="Selenium.WebDriver" Version="3.7.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+	  <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+	  <PackageReference Include="MSTest.TestAdapter" Version="1.1.17" />
+	  <PackageReference Include="MSTest.TestFramework" Version="1.1.17" />
+	  <PackageReference Include="MSTest.TestAdapter" Version="1.1.17" />
+	  <PackageReference Include="MSTest.TestFramework" Version="1.1.17" />
+	  <PackageReference Include="Selenium.WebDriver.MicrosoftDriver" Version="15.15063.0" />
+	  <PackageReference Include="System.Security.Permissions" Version="4.4.0-preview2-25405-01" />
+	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+  </ItemGroup>
+
+  <!-- WebDrivers-->
+  <ItemGroup>
     <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="2.33.0" />
     <PackageReference Include="Selenium.WebDriver.GeckoDriver" Version="0.19.1" />
-    <PackageReference Include="xunit" Version="2.3.1" />
-	<PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
-    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
-	<PackageReference Include="MSTest.TestAdapter" Version="1.1.17" />
-	<PackageReference Include="MSTest.TestFramework" Version="1.1.17" />
-	<PackageReference Include="MSTest.TestAdapter" Version="1.1.17" />
-	<PackageReference Include="MSTest.TestFramework" Version="1.1.17" />
-	<!-- <PackageReference Include="NUnit" Version="3.7.1" />  
-	<PackageReference Include="NUnit3TestAdapter" Version="3.8.0-alpha1" />  
-	<PackageReference Include="WebDriver.GeckoDriver" Version="0.19.0" />  -->
-	<PackageReference Include="Selenium.WebDriver.MicrosoftDriver" Version="15.15063.0" />
-	<PackageReference Include="System.Security.Permissions" Version="4.4.0-preview2-25405-01" />
-	<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
   </ItemGroup>
+
+  <!-- Fire Fox x64/x32-->
+  <ItemGroup>
+    <PackageReference Include="Selenium.WebDriver.GeckoDriver" Version="0.19.1" Condition="$(FirefoxType)=='x32'" />
+    <PackageReference Include="Selenium.WebDriver.GeckoDriver.Win64" Version="0.19.1" Condition="$(FirefoxType)=='x64'" />
+  </ItemGroup>
+  
+   <ItemGroup>
+     <Folder Include="configs\" />
+     <Folder Include="testData\" />
+   </ItemGroup>
+
+  <!-- NUnit 3 part-->
+  <ItemGroup>
+    <!--
+    <PackageReference Include="NUnit" Version="3.7.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.8.0-alpha1" />
+    <PackageReference Include="WebDriver.GeckoDriver" Version="0.19.0" />
+    -->
+  </ItemGroup>
+  
+  
+
+  <Target Name="BeforeBuild1">
+    <Exec Command="echo I am owere HERE" />
+    <Message Importance="High" Text="SOmeName = $(FirefoxType)" />
+  </Target>
 
 </Project>
