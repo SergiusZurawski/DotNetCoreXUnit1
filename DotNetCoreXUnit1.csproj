@@ -26,13 +26,16 @@
   <!-- WebDrivers-->
   <ItemGroup>
     <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="2.33.0" />
-    <PackageReference Include="Selenium.WebDriver.GeckoDriver" Version="0.19.1" />
   </ItemGroup>
 
-  <!-- Fire Fox x64/x32-->
-  <ItemGroup>
-    <PackageReference Include="Selenium.WebDriver.GeckoDriver" Version="0.19.1" Condition="$(FirefoxType)=='x32'" />
-    <PackageReference Include="Selenium.WebDriver.GeckoDriver.Win64" Version="0.19.1" Condition="$(FirefoxType)=='x64'" />
+  <!-- Fire Fox x64/x32  -->
+  <ItemGroup Condition="$(FirefoxType)=='x32'">
+    <PackageReference Include="Selenium.WebDriver.GeckoDriver" Version="0.19.1"  />
+  </ItemGroup>
+ 
+  
+  <ItemGroup Condition="$(FirefoxType)=='x64'">
+    <PackageReference Include="Selenium.WebDriver.GeckoDriver.Win64" Version="0.19.1"  />
   </ItemGroup>
   
    <ItemGroup>
@@ -50,10 +53,14 @@
   </ItemGroup>
   
   
-
+  <!-- Testing purposes only
+    dotnet build DotNetCoreXUnit1.csproj /t:BeforeBuild1 /p:FirefoxType=x64  -->
   <Target Name="BeforeBuild1">
     <Exec Command="echo I am owere HERE" />
     <Message Importance="High" Text="SOmeName = $(FirefoxType)" />
+    <Message Importance="High" Text="We got in x32" Condition="$(FirefoxType)=='x32'" />
+    <Message Importance="High" Text="We got in x64" Condition="$(FirefoxType)=='x64'" />
   </Target>
+
 
 </Project>
