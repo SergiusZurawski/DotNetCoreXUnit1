@@ -12,6 +12,7 @@ using OpenQA.Selenium.Support.Events;
 using OpenQA.Selenium.Support.Extensions;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace DotNetCoreXUnit1
 {
@@ -50,9 +51,6 @@ namespace DotNetCoreXUnit1
                 var wait = new WebDriverWait(driver, TimeSpan.FromMinutes(1));
                 var clickableElement = wait.Until(ExpectedConditions.ElementToBeClickable(By.PartialLinkText("TFS Test API")));
                 clickableElement.Click();
-                var ss = driver.GetScreenshot();
-                ss.SaveAsFile("ss1.png");
-                output.WriteLine("screenshot {0}", location + "/" + "ss1.png");
             }
         }
 
@@ -81,17 +79,12 @@ namespace DotNetCoreXUnit1
                 firingDriver.ExceptionThrown += firingDriver_TakeScreenshotOnException;
                 firingDriver.NavigatedForward += firingDriver_OnNavigating;
                 firingDriver.Navigated += firingDriver_OnNavigating;
-                //firingDriver.FindElementCompleted += firingDriver_OnNavigating;
                 var driver2 = firingDriver;
                 driver2.Navigate().GoToUrl(@"https://automatetheplanet.com/multiple-files-page-objects-item-templates/");
-                var ss = driver2.GetScreenshot();
-                ss.SaveAsFile("chromeUniqName.png");
-                output.WriteLine("Change screenshot {0}", location + "/" + "chromeUniqName.png");
-                output.WriteLine("Still inside");
                 var link = driver2.FindElement(By.PartialLinkText("TFS Test API"));
                 var jsToBeExecuted = $"window.scroll(0, {link.Location.Y});";
                 ((IJavaScriptExecutor)driver2).ExecuteScript(jsToBeExecuted);
-                var wait = new WebDriverWait(driver2, TimeSpan.FromMinutes(1));
+                var wait = new WebDriverWait(driver2, TimeSpan.FromSeconds(30));
                 var clickableElement = wait.Until(ExpectedConditions.ElementToBeClickable(By.PartialLinkText("TFS Test API")));
                 clickableElement.Click();
                 var clickableElement1 = wait.Until(ExpectedConditions.ElementToBeClickable(By.PartialLinkText("dfaskjdflksadfjlaksjdf")));
@@ -100,14 +93,43 @@ namespace DotNetCoreXUnit1
 
             }
         }
+
+        [Fact]
+        public void TestWithChromeDriver1()
+        {
+            using (var driver = new ChromeDriver(location))
+            {
+                global_driver = driver;
+                var firingDriver = new EventFiringWebDriver(driver);
+                firingDriver.ExceptionThrown += firingDriver_TakeScreenshotOnException;
+                firingDriver.NavigatedForward += firingDriver_OnNavigating;
+                firingDriver.Navigated += firingDriver_OnNavigating;
+                var driver2 = firingDriver;
+                driver2.Navigate().GoToUrl(@"https://automatetheplanet.com/multiple-files-page-objects-item-templates/");
+                var link = driver2.FindElement(By.PartialLinkText("TFS Test API"));
+                var jsToBeExecuted = $"window.scroll(0, {link.Location.Y});";
+                ((IJavaScriptExecutor)driver2).ExecuteScript(jsToBeExecuted);
+                var wait = new WebDriverWait(driver2, TimeSpan.FromSeconds(30));
+                var clickableElement = wait.Until(ExpectedConditions.ElementToBeClickable(By.PartialLinkText("TFS Test API")));
+                clickableElement.Click();
+                var clickableElement1 = wait.Until(ExpectedConditions.ElementToBeClickable(By.PartialLinkText("dfaskjdflksadfjlaksjdf")));
+                clickableElement1.Click();
+
+
+            }
+        }
+
         private IWebDriver global_driver ;
         private void firingDriver_TakeScreenshotOnException(object sender, WebDriverExceptionEventArgs e)
         {
-            output.WriteLine("we are HERE !!!!! firingDriver_TakeScreenshotOnException");
-            string timestamp = DateTime.Now.ToString("yyyy-MM-dd-hhmm-ss");
-            string path = location + "/Exception-" + timestamp + ".png";
-            global_driver.TakeScreenshot().SaveAsFile(path);
-            output.WriteLine("<screenshot xlink:type=\"simple\" xlink: href = \"{0}\" xlink: show = \"new\" > ", path);
+            string name = e.GetType().FullName + DateTime.Now.ToString("yyyy-MM-dd-hhmm"); ;
+            if (!((TestOutputHelper) output).Output.Contains(name))
+            {
+                string fullName = location + "\\" + name;
+                global_driver.TakeScreenshot().SaveAsFile(fullName);
+                output.WriteLine("Screenshot: " + fullName);
+            }
+
         }
 
         private void firingDriver_OnNavigating(object sender, WebDriverNavigationEventArgs er)
