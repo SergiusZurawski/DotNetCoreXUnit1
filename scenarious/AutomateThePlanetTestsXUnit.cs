@@ -14,6 +14,10 @@ using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
+
+// https://stackoverflow.com/questions/37752273/how-do-i-run-specific-tests-using-dotnet-test
+// https://stackoverflow.com/questions/16484839/get-name-of-running-test-in-xunit
+
 namespace DotNetCoreXUnit1
 {
     
