@@ -37,9 +37,9 @@ namespace DotNetCoreXUnit1
         {
             output.WriteLine("Location is here ::::::::: " + location);
             //using (var driver = new FirefoxDriver(location))
-            //FirefoxOptions options = new FirefoxOptions();
-            //options.AddAdditionalCapability("moz:firefoxOptions.binary", "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"); //This is the location where you have installed Firefox on your machine
-            using (var driver = new FirefoxDriver(location))
+            FirefoxOptions options = new FirefoxOptions();
+            options.BrowserExecutableLocation = @"C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe";
+            using (var driver = new FirefoxDriver(location, options))
             {
                 global_driver = driver;
                 var firingDriver = new EventFiringWebDriver(driver);
@@ -98,30 +98,7 @@ namespace DotNetCoreXUnit1
             }
         }
 
-        [Fact]
-        public void TestWithChromeDriver1()
-        {
-            using (var driver = new ChromeDriver(location))
-            {
-                global_driver = driver;
-                var firingDriver = new EventFiringWebDriver(driver);
-                firingDriver.ExceptionThrown += firingDriver_TakeScreenshotOnException;
-                firingDriver.NavigatedForward += firingDriver_OnNavigating;
-                firingDriver.Navigated += firingDriver_OnNavigating;
-                var driver2 = firingDriver;
-                driver2.Navigate().GoToUrl(@"https://automatetheplanet.com/multiple-files-page-objects-item-templates/");
-                var link = driver2.FindElement(By.PartialLinkText("TFS Test API"));
-                var jsToBeExecuted = $"window.scroll(0, {link.Location.Y});";
-                ((IJavaScriptExecutor)driver2).ExecuteScript(jsToBeExecuted);
-                var wait = new WebDriverWait(driver2, TimeSpan.FromSeconds(30));
-                var clickableElement = wait.Until(ExpectedConditions.ElementToBeClickable(By.PartialLinkText("TFS Test API")));
-                clickableElement.Click();
-                var clickableElement1 = wait.Until(ExpectedConditions.ElementToBeClickable(By.PartialLinkText("dfaskjdflksadfjlaksjdf")));
-                clickableElement1.Click();
-
-
-            }
-        }
+      
 
         private IWebDriver global_driver ;
         private void firingDriver_TakeScreenshotOnException(object sender, WebDriverExceptionEventArgs e)

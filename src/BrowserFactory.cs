@@ -9,7 +9,7 @@ using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.IE;
 using OpenQA.Selenium.Support.Events;
 
-namespace DotNetCoreXUnit1.src
+namespace DotNetCoreXUnit1
 {
     class BrowserFactory
     {
@@ -21,8 +21,8 @@ namespace DotNetCoreXUnit1.src
         {
             get
             {
-                if (driver == null)
-                    throw new NullReferenceException("The WebDriver browser instance was not initialized. You should first call the method InitBrowser.");
+//                if (driver == null)
+//                    throw new NullReferenceException("The WebDriver browser instance was not initialized. You should first call the method InitBrowser.");
                 return driver;
             }
             private set
@@ -31,31 +31,35 @@ namespace DotNetCoreXUnit1.src
             }
         }
 
-        public static void InitBrowser(string browserName)
+        public static void InitBrowser(Dictionary<string, string> config)
         {
-            switch (browserName)
+            switch (config.GetValueOrDefault("webbrowser"))
             {
                 case "FF":
                     if (Driver == null)
                     {
-                        driver = new EventFiringWebDriver(new FirefoxDriver(location));
+                        FirefoxOptions options = new FirefoxOptions();
+                        options.BrowserExecutableLocation =
+                            @"C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"; //TODO: REmove hardcoded value, move to config etc
+                        driver = new EventFiringWebDriver(new FirefoxDriver(location, options));
                         Drivers.Add("FF", Driver);
+                        
                     }
                     break;
-
                 case "IE":
                     if (Driver == null)
                     {
                         driver = new EventFiringWebDriver(new InternetExplorerDriver(location));
                         Drivers.Add("IE", Driver);
+                        
                     }
                     break;
-
                 default:
                     if (Driver == null)
                     {
                         driver = new EventFiringWebDriver(new ChromeDriver(location));
                         Drivers.Add("Chrome", Driver);
+                        
                     }
                     break;
             }

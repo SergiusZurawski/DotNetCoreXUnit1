@@ -45,17 +45,19 @@
   </ItemGroup>
 
    <ItemGroup>
-     <Folder Include="configs\" />
      <Folder Include="testData\" />
    </ItemGroup>
 
   <!-- NUnit 3 part-->
-  <ItemGroup>
-    <!--
+  <ItemGroup><!--
     <PackageReference Include="NUnit" Version="3.7.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.8.0-alpha1" />
     <PackageReference Include="WebDriver.GeckoDriver" Version="0.19.0" />
     -->
+  
+    <None Update="Properties\launchSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   
   
@@ -67,6 +69,12 @@
     <Message Importance="High" Text="We got in x32" Condition="$(FirefoxType)=='x32'" />
     <Message Importance="High" Text="We got in x64" Condition="$(FirefoxType)=='x64'" />
   </Target>
+
+  <ItemGroup>
+    <!-- CopyToOutputDirectory = { Always, PreserveNewest, Never } -->
+    <None Include="Properties\launchSettings.json" CopyToOutputDirectory="Always" />
+    <None Include="configs\*.*" CopyToOutputDirectory="Always" />
+  </ItemGroup>
 
 
 </Project>
