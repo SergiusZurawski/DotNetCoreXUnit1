@@ -10,20 +10,15 @@ namespace DotNetCoreXUnit1.Page
 {
     class PatientSearch : AbstractPage
     {
-        private string pagePath = "/authorizations/submission/plans/aries/patient-search-mock";
+        protected override string PagePath { get => "/authorizations/submission/plans/aries/patient-search-mock"; }
         private WebDriverWait _driverWait;
-        private string url;
-        public override string Url
-        {
-            get { return this.url; }
-        }
+        
 
         private By Search = By.CssSelector("i.icon-search");
 
-        public PatientSearch(Dictionary<string, string> config) : base(config)
+        public PatientSearch() 
         {
-            this.url = config.GetValueOrDefault("hostUrl")+ pagePath;
-            _driverWait = new WebDriverWait(_driver, TimeSpan.FromMilliseconds(10000));
+            _driverWait = new WebDriverWait(_driver, TimeSpan.FromMilliseconds(20000));
         }
 
         public override bool WaitUntilIsLoaded()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using DotNetCoreXUnit1.Utilities;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.PageObjects;
 using OpenQA.Selenium.Support.UI;
 
@@ -17,14 +18,17 @@ namespace DotNetCoreXUnit1.Component
     public abstract class AbstractComponent : IComponent
     {
 
-        protected IWebDriver _driver;
-        protected WebDriverWait _wait;
-        protected readonly ElementHelper _eHelper;
+        protected IWebDriver Driver;
+        protected WebDriverWait Wait;
+        protected readonly ElementHelper EHelper;
+        protected readonly Actions Actions;
+
         public AbstractComponent(IWebDriver driver)
         {
-            _driver = driver;
-            _wait = new WebDriverWait(_driver, TimeSpan.FromMilliseconds(10000));
-            _eHelper = new ElementHelper(_driver);
+            Driver = driver;
+            Wait = new WebDriverWait(Driver, TimeSpan.FromMilliseconds(10000));
+            EHelper = new ElementHelper(Driver);
+            Actions = new Actions(Driver);
         }
 
         protected abstract IWebElement Root { get;}
@@ -33,17 +37,17 @@ namespace DotNetCoreXUnit1.Component
 
         public IWebElement E(By locator)
         {
-            return _eHelper.E(locator);
+            return Root.FindElement(locator);
         }
 
         public IList<IWebElement> EL(By locator)
         {
-            return _eHelper.EL(locator);
+            return Root.FindElements(locator);
         }
 
         public SelectElement S(By locator)
         {
-            return _eHelper.S(locator);
+            return new SelectElement(Root.FindElement(locator));
         }
     }
 }

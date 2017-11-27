@@ -17,13 +17,13 @@ namespace DotNetCoreXUnit1.Component
         private By root = By.Id("preScreeningMessageModal");
         private By primaryButton = By.Id("primary-button");
         protected override IWebElement Root {
-            get { return _driver.FindElement(root); }
+            get { return Driver.FindElement(root); }
         }
 
         public override void WaitUntilIsLoaded()
         {
-            _wait.Until(ExpectedConditions.ElementIsVisible(root));
-            _wait.Until(ExpectedConditions.ElementIsVisible(primaryButton));
+            Wait.Until(ExpectedConditions.ElementIsVisible(root));
+            Wait.Until(ExpectedConditions.ElementIsVisible(primaryButton));
         }
 
         public override bool IsVisible()
@@ -33,7 +33,7 @@ namespace DotNetCoreXUnit1.Component
 
         public void Close()
         {
-            _driver.FindElement(primaryButton).Click();
+            Driver.FindElement(primaryButton).Click();
         }
     }
 }

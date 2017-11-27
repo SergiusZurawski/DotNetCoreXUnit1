@@ -9,9 +9,9 @@ using OpenQA.Selenium.Support.UI;
 
 namespace DotNetCoreXUnit1.Component
 {
-    public class CustomSearchPopUp : AbstractComponent
+    public class ServcingCustomSearchPopUp : AbstractComponent
     {
-        public CustomSearchPopUp(IWebDriver driver) : base(driver)
+        public ServcingCustomSearchPopUp(IWebDriver driver) : base(driver)
         {
         }
 
@@ -19,13 +19,13 @@ namespace DotNetCoreXUnit1.Component
         private By SerachButton = By.Id("servicing-provider-search-button");
         private By LastName = By.Id("servicing-provider-provider-last-name");
         protected override IWebElement Root {
-            get { return _driver.FindElement(root); }
+            get { return Driver.FindElement(root); }
         }
 
         public override void WaitUntilIsLoaded()
         {
-            _wait.Until(ExpectedConditions.ElementIsVisible(root));
-            _wait.Until(ExpectedConditions.ElementIsVisible(SerachButton));
+            Wait.Until(ExpectedConditions.ElementIsVisible(root));
+            Wait.Until(ExpectedConditions.ElementIsVisible(SerachButton));
         }
 
         public override bool IsVisible()

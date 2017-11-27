@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Policy;
 using System.Text;
+using DotNetCoreXUnit1.src.DTO.Config;
 using DotNetCoreXUnit1.Utilities;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.PageObjects;
 using OpenQA.Selenium.Support.UI;
 
@@ -22,14 +25,24 @@ namespace DotNetCoreXUnit1.Page
 
         protected IWebDriver _driver;
         protected readonly ElementHelper _eHelper;
-        public AbstractPage(Dictionary<string, string> config)
+        protected readonly Actions _actions;
+        protected WebDriverWait _wait;
+
+        public string Url { get;}
+        protected string Host { get; }
+        protected abstract string PagePath { get;}
+
+        protected AbstractPage()
         {
-            BrowserFactory.InitBrowser(config);
-            _driver = BrowserFactory.Driver;
+            this._driver = TestContext.Current.BrowserFactory.Driver;
+
+            _wait = new WebDriverWait(_driver, TimeSpan.FromMilliseconds(10000));
             _eHelper = new ElementHelper(_driver);
+            _actions = new Actions(_driver);
+            Host = @"http://" + TestContext.Current.EnvConfig.HostName + TestContext.Current.EnvConfig.DomainName;
+            Url = Host + PagePath;
         }
 
-        public abstract string Url { get;}
 
         public void GoTo()
         {

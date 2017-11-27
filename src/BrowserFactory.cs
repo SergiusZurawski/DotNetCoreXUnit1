@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
+using DotNetCoreXUnit1.src.DTO.Config;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Firefox;
@@ -11,72 +15,107 @@ using OpenQA.Selenium.Support.Events;
 
 namespace DotNetCoreXUnit1
 {
-    class BrowserFactory
+    public class BrowserFactory
     {
         private static readonly IDictionary<string, IWebDriver> Drivers = new Dictionary<string, IWebDriver>();
         private static readonly string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private static IWebDriver driver;
+        private Dictionary<string, string> initConfig;
+        private EnvironmentConfig envConfig;
+        public static BrowserFactory Instance { get; private set; }
+        private readonly string BrowserName;
 
-        public static IWebDriver Driver
+        private BrowserFactory(Dictionary<string, string> initConfig, EnvironmentConfig envConfig)
+        {
+            Console.WriteLine("Inside BrowserFactory");
+            this.initConfig = initConfig;
+            this.envConfig = envConfig;
+            this.BrowserName = initConfig.GetValueOrDefault("webbrowser");
+
+            //TODO: we need this in order to close browsers, but there has to be a better way
+            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+            
+        }
+
+        public IWebDriver Driver
         {
             get
             {
-//                if (driver == null)
-//                    throw new NullReferenceException("The WebDriver browser instance was not initialized. You should first call the method InitBrowser.");
-                return driver;
-            }
-            private set
-            {
-                driver = value;
+                if (Instance == null)
+                {
+                    throw new Exception("BrowserFactory, hasn't been initialized yet. " +
+                                            "Please, call BrowserFactory.InitFactory(Dictionary<string, string> initConfig, EnvironmentConfig envConfig) " +
+                                            "before using BrowserFactory.Driver");
+                }
+                return Instance.InitBrowser();
             }
         }
 
-        public static void InitBrowser(Dictionary<string, string> config)
+
+
+        public static BrowserFactory InitFactory(Dictionary<string, string> initConfig, EnvironmentConfig envConfig)
         {
-            switch (config.GetValueOrDefault("webbrowser"))
+            Instance = new BrowserFactory(initConfig, envConfig);
+            return Instance;
+        }
+
+        private IWebDriver InitBrowser()
+        {
+            string browserForThread = Thread.CurrentThread.ManagedThreadId + BrowserName;
+            switch (BrowserName)
             {
                 case "FF":
-                    if (Driver == null)
+                    if (!Drivers.ContainsKey(browserForThread))
                     {
+                        
                         FirefoxOptions options = new FirefoxOptions();
                         options.BrowserExecutableLocation =
                             @"C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"; //TODO: REmove hardcoded value, move to config etc
-                        driver = new EventFiringWebDriver(new FirefoxDriver(location, options));
-                        Drivers.Add("FF", Driver);
-                        
-                    }
-                    break;
+                        Drivers.Add(browserForThread, new EventFiringWebDriver(new FirefoxDriver(location, options)));
+
+                    } 
+                    return Drivers[browserForThread];  
                 case "IE":
-                    if (Driver == null)
+                    if (!Drivers.ContainsKey(browserForThread))
                     {
-                        driver = new EventFiringWebDriver(new InternetExplorerDriver(location));
-                        Drivers.Add("IE", Driver);
-                        
+                        Drivers.Add(browserForThread, new EventFiringWebDriver(new InternetExplorerDriver(location)));
+
                     }
-                    break;
+                    return Drivers[browserForThread];
                 default:
-                    if (Driver == null)
+                    if (!Drivers.ContainsKey(browserForThread))
                     {
-                        driver = new EventFiringWebDriver(new ChromeDriver(location));
-                        Drivers.Add("Chrome", Driver);
-                        
+                        Drivers.Add(browserForThread, new EventFiringWebDriver(new ChromeDriver(location)));
+
                     }
-                    break;
+                    return Drivers[browserForThread];
             }
         }
 
-        public static void LoadApplication(string url)
-        {
-            Driver.Url = url;
-        }
+//        public static void LoadApplication(string url)
+//        {
+//            Driver.Url = url;
+//        }
 
-        public static void CloseAllDrivers()
+        public void CloseAllDrivers()
         {
             foreach (var key in Drivers.Keys)
             {
                 Drivers[key].Close();
                 Drivers[key].Quit();
             }
+        }
+
+        public void CloseWebDriver()
+        {
+            string browserForThread = Thread.CurrentThread.ManagedThreadId + BrowserName;
+            Drivers[browserForThread].Close();
+            Drivers[browserForThread].Quit();
+        }
+
+        static void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            Instance.CloseAllDrivers();
         }
     }
 }
