@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 namespace DotNetCoreXUnit1
 {
     [Collection("SharedVariableCollection")]
-    public class Class2 
+    public class Class2 : IDisposable
     {
         private readonly ITestOutputHelper output;
         private readonly LaunchSettingsFixture _fixture;
@@ -71,8 +71,14 @@ namespace DotNetCoreXUnit1
 //            createAuthorization.UploadAttachment("");
             createAuthorization.AddNotes("Some notes");
             createAuthorization.Submit();
+            context.BrowserFactory.CloseWebDriver();
         }
 
-    
+
+        public void Dispose()
+        {
+            context.BrowserFactory.CloseWebDriver();
+        }
+
     }
 }

@@ -104,12 +104,12 @@ namespace DotNetCoreXUnit1
         private void firingDriver_TakeScreenshotOnException(object sender, WebDriverExceptionEventArgs e)
         {
             string name = e.GetType().FullName + DateTime.Now.ToString("yyyy-MM-dd-hhmm"); ;
-            if (!((TestOutputHelper) output).Output.Contains(name))
-            {
+//            if (!((TestOutputHelper) output).Output.Contains(name))
+//            {
                 string fullName = location + "\\" + name;
                 global_driver.TakeScreenshot().SaveAsFile(fullName);
                 output.WriteLine("Screenshot: " + fullName);
-            }
+//            }
 
         }
 

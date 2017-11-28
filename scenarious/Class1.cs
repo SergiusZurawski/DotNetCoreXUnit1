@@ -3,20 +3,25 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using DotNetCoreXUnit1;
 using DotNetCoreXUnit1.Page;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.Events;
 using OpenQA.Selenium.Support.UI;
 using Xunit;
+using Xunit.Abstractions;
+using Xunit.Sdk;
+
 
 namespace DotNetCoreXUnit1
 {
-    public class Class1
-    {
 
+    public class Class1 : IDisposable
+    {
         private readonly string location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private readonly TestContext context = TestContext.Current;
+
 
         //        [Fact]
         //        public void PassingTest()
@@ -43,7 +48,8 @@ namespace DotNetCoreXUnit1
             SignIn signIn = new SignIn();
             signIn.WaitUntilIsLoaded();
             signIn.EnterCredentials(context.EnvConfig.UserCredentials.GetValueOrDefault("user2").UserName, context.EnvConfig.UserCredentials.GetValueOrDefault("user2").Password);
-            //Assert.Equal(5, Add(2, 2));
+            Assert.Equal(5, Add(2, 2));
+            
         }
 
         [Fact]
@@ -61,5 +67,15 @@ namespace DotNetCoreXUnit1
         {
             return x + y;
         }
+
+        public void Dispose()
+        {
+            context.BrowserFactory.CloseWebDriver();
+        }
+
     }
+
+
+
+
 }

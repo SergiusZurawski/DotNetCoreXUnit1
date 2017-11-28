@@ -12,6 +12,7 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.IE;
 using OpenQA.Selenium.Support.Events;
+using OpenQA.Selenium.Support.Extensions;
 
 namespace DotNetCoreXUnit1
 {
@@ -33,8 +34,6 @@ namespace DotNetCoreXUnit1
             this.BrowserName = initConfig.GetValueOrDefault("webbrowser");
 
             //TODO: we need this in order to close browsers, but there has to be a better way
-            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
-            
         }
 
         public IWebDriver Driver
@@ -71,21 +70,27 @@ namespace DotNetCoreXUnit1
                         FirefoxOptions options = new FirefoxOptions();
                         options.BrowserExecutableLocation =
                             @"C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"; //TODO: REmove hardcoded value, move to config etc
-                        Drivers.Add(browserForThread, new EventFiringWebDriver(new FirefoxDriver(location, options)));
+                        var firingDriver = new EventFiringWebDriver(new FirefoxDriver(location, options));
+                        firingDriver.ExceptionThrown += firingDriver_TakeScreenshotOnException;
+                        Drivers.Add(browserForThread, firingDriver);
 
                     } 
                     return Drivers[browserForThread];  
                 case "IE":
                     if (!Drivers.ContainsKey(browserForThread))
                     {
-                        Drivers.Add(browserForThread, new EventFiringWebDriver(new InternetExplorerDriver(location)));
+                        var firingDriver = new EventFiringWebDriver(new InternetExplorerDriver(location));
+                        firingDriver.ExceptionThrown += firingDriver_TakeScreenshotOnException;
+                        Drivers.Add(browserForThread, firingDriver);
 
                     }
                     return Drivers[browserForThread];
                 default:
                     if (!Drivers.ContainsKey(browserForThread))
                     {
-                        Drivers.Add(browserForThread, new EventFiringWebDriver(new ChromeDriver(location)));
+                        var firingDriver = new EventFiringWebDriver(new ChromeDriver(location));
+                        firingDriver.ExceptionThrown += firingDriver_TakeScreenshotOnException;
+                        Drivers.Add(browserForThread, new EventFiringWebDriver(firingDriver));
 
                     }
                     return Drivers[browserForThread];
@@ -113,9 +118,18 @@ namespace DotNetCoreXUnit1
             Drivers[browserForThread].Quit();
         }
 
-        static void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        private void firingDriver_TakeScreenshotOnException(object sender, WebDriverExceptionEventArgs e)
         {
-            Instance.CloseAllDrivers();
+            string name = e.GetType().FullName + DateTime.Now.ToString("yyyy-MM-dd-hhmm"); ;
+            //            if (!((TestOutputHelper) output).Output.Contains(name))
+            //            {
+            string fullName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/ScreenShots" + "/" + name;
+            Driver.TakeScreenshot().SaveAsFile(fullName);
+            //output.WriteLine("Screenshot: " + fullName);
+            //            }
+
         }
+
+
     }
 }
